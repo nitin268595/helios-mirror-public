@@ -184,15 +184,9 @@ Three buttons are already added including Drive Link, Index Link, and View Link,
 mirror - Start mirroring
 zipmirror - Start mirroring and upload as .zip
 unzipmirror - Extract files
-qbmirror - Start mirroring using qBittorrent
-qbzipmirror - Start mirroring and upload as .zip using qb
-qbunzipmirror - Extract files using qBittorrent
 leech - Leech Torrent/Direct link
 zipleech - Leech Torrent/Direct link and upload as .zip
 unzipleech - Leech Torrent/Direct link and extract
-qbleech - Leech Torrent/Magnet using qBittorrent
-qbzipleech - Leech Torrent/Magnet and upload as .zip using qb
-qbunzipleech - Leech Torrent and extract using qb
 clone - Copy file/folder to Drive count - Count file/folder of Drive link
 watch - Mirror yt-dlp supported link
 zipwatch - Mirror playlist link and upload as .zip
@@ -201,9 +195,7 @@ leechzipwatch - Leech playlist link and upload as .zip
 leechset - Leech settings
 setthumb - Set Thumbnail
 status - Get Mirror Status message
-list - [query] Search files in Drive using new and interactive ui
-search - [query] Search files in Drive using new and interactive ui
-ts - [query] Search for torrents with installed qbittorrent search plugins
+list - [query] Search files in Drive
 cancel - Cancel a task
 cancelall - Cancel all tasks
 del - [drive_url] Delete file from Drive

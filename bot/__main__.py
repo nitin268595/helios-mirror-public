@@ -9,9 +9,7 @@ from pyrogram import idle
 from sys import executable
 from telegram import ParseMode, InlineKeyboardMarkup
 from telegram.ext import CommandHandler
-
-from wserver import start_server_async
-from bot import bot, app, dispatcher, updater, botStartTime, IGNORE_PENDING_REQUESTS, IS_VPS, PORT, alive, web, OWNER_ID, AUTHORIZED_CHATS, LOGGER, Interval, nox
+from bot import bot, app, dispatcher, updater, botStartTime, IGNORE_PENDING_REQUESTS, OWNER_ID, AUTHORIZED_CHATS, LOGGER, Interval
 from bot.helper.ext_utils import fs_utils
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.message_utils import sendMessage, sendMarkup, editMessage, sendLogFile
@@ -19,7 +17,7 @@ from .helper.ext_utils.telegraph_helper import telegraph
 from .helper.ext_utils.bot_utils import get_readable_file_size, get_readable_time
 from .helper.telegram_helper.filters import CustomFilters
 from bot.helper.telegram_helper import button_build
-from .modules import authorize, list, cancel_mirror, mirror_status, mirror, clone, watch, search, delete, speedtest, count, leech_settings, usage, ts_search
+from .modules import authorize, list, search, cancel_mirror, mirror_status, mirror, clone, watch, delete, speedtest, count, leech_settings
 
 
 def stats(update, context):
@@ -63,7 +61,7 @@ def stats(update, context):
 def start(update, context):
     buttons = button_build.ButtonMaker()
     buttons.buildbutton("Repo", "https://github.com/arshsisodiya/helios-mirror-public")
-    buttons.buildbutton("Channel", "https://t.me/heliosmirror")
+    buttons.buildbutton("Support", "https://t.me/mirrorsociety")
     reply_markup = InlineKeyboardMarkup(buttons.build_menu(2))
     if CustomFilters.authorized_user(update) or CustomFilters.authorized_chat(update):
         start_string = f'''
@@ -76,17 +74,9 @@ Type /{BotCommands.HelpCommand} to get a list of available commands
 
 def restart(update, context):
     restart_message = sendMessage("Restarting...", context.bot, update)
-    if Interval:
-        Interval[0].cancel()
-    alive.kill()
-    process = psutil.Process(web.pid)
-    for proc in process.children(recursive=True):
-        proc.kill()
-    process.kill()
     fs_utils.clean_all()
     subprocess.run(["python3", "update.py"])
     # Save restart message object in order to reply to it after restarting
-    nox.kill()
     with open(".restartmsg", "w") as f:
         f.truncate(0)
         f.write(f"{restart_message.chat.id}\n{restart_message.message_id}\n")
@@ -105,41 +95,31 @@ def log(update, context):
 
 
 help_string_telegraph = f'''<br>
-<b>/{BotCommands.HelpCommand}</b>: To get this message
-<br><br>
 <b>/{BotCommands.MirrorCommand}</b> [download_url][magnet_link]: Start mirroring to Google Drive. Send <b>/{BotCommands.MirrorCommand}</b> for more help
 <br><br>
 <b>/{BotCommands.ZipMirrorCommand}</b> [download_url][magnet_link]: Start mirroring and upload the file/folder compressed with zip extension
 <br><br>
 <b>/{BotCommands.UnzipMirrorCommand}</b> [download_url][magnet_link]: Start mirroring and upload the file/folder extracted from any archive extension
 <br><br>
-<b>/{BotCommands.QbMirrorCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start Mirroring using qBittorrent, Use <b>/{BotCommands.QbMirrorCommand} s</b> to select files before downloading
-<br><br>
-<b>/{BotCommands.QbZipMirrorCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start mirroring using qBittorrent and upload the file/folder compressed with zip extension
-<br><br>
-<b>/{BotCommands.QbUnzipMirrorCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start mirroring using qBittorrent and upload the file/folder extracted from any archive extension
-<br><br>
-<b>/{BotCommands.LeechCommand}</b> [download_url][magnet_link]: Start leeching to Telegram, Use <b>/{BotCommands.LeechCommand} s</b> to select files before leeching
-<br><br>
-<b>/{BotCommands.ZipLeechCommand}</b> [download_url][magnet_link]: Start leeching to Telegram and upload the file/folder compressed with zip extension
-<br><br>
-<b>/{BotCommands.UnzipLeechCommand}</b> [download_url][magnet_link][torent_file]: Start leeching to Telegram and upload the file/folder extracted from any archive extension
-<br><br>
-<b>/{BotCommands.QbLeechCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start leeching to Telegram using qBittorrent, Use <b>/{BotCommands.QbLeechCommand} s</b> to select files before leeching
-<br><br>
-<b>/{BotCommands.QbZipLeechCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start leeching to Telegram using qBittorrent and upload the file/folder compressed with zip extension
-<br><br>
-<b>/{BotCommands.QbUnzipLeechCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start leeching to Telegram using qBittorrent and upload the file/folder extracted from any archive extension
-<br><br>
 <b>/{BotCommands.CloneCommand}</b> [drive_url][gdtot_url]: Copy file/folder to Google Drive
 <br><br>
-<b>/{BotCommands.CountCommand}</b> [drive_url][gdtot_url]: Count file/folder of Google Drive
+<b>/{BotCommands.ListCommand}</b> [query]: Search in Google Drive(s)
 <br><br>
-<b>/{BotCommands.DeleteCommand}</b> [drive_url]: Delete file/folder from Google Drive (Only Owner & Sudo)
+<b>/{BotCommands.CountCommand}</b> [drive_url][gdtot_url]: Count file/folder of Google Drive
 <br><br>
 <b>/{BotCommands.WatchCommand}</b> [yt-dlp supported link]: Mirror yt-dlp supported link. Send <b>/{BotCommands.WatchCommand}</b> for more help
 <br><br>
 <b>/{BotCommands.ZipWatchCommand}</b> [yt-dlp supported link]: Mirror yt-dlp supported link as zip
+<br><br>
+<b>/{BotCommands.CancelMirror}</b>: Reply to the message by which the download was initiated and that download will be cancelled
+<br><br>
+<b>/{BotCommands.StatusCommand}</b>: Shows a status of all the downloads
+<br><br>
+<b>/{BotCommands.LeechCommand}</b> [link]: Start leeching to Telegram, Use <b>/{BotCommands.LeechCommand} s</b> to select files before leeching
+<br><br>
+<b>/{BotCommands.ZipLeechCommand}</b> [link]: Start leeching to Telegram and upload the file/folder compressed with zip extension
+<br><br>
+<b>/{BotCommands.UnzipLeechCommand}</b> [link]: Start leeching to Telegram and upload the file/folder extracted from any archive extension
 <br><br>
 <b>/{BotCommands.LeechWatchCommand}</b> [yt-dlp supported link]: Leech yt-dlp supported link
 <br><br>
@@ -148,20 +128,6 @@ help_string_telegraph = f'''<br>
 <b>/{BotCommands.LeechSetCommand}</b>: Leech settings
 <br><br>
 <b>/{BotCommands.SetThumbCommand}</b>: Reply photo to set it as Thumbnail
-<br><br>
-<b>/{BotCommands.CancelMirror}</b>: Reply to the message by which the download was initiated and that download will be cancelled
-<br><br>
-<b>/{BotCommands.CancelAllCommand}</b>: Cancel all downloading tasks
-<br><br>
-<b>/{BotCommands.ListCommand}</b> [query]: Search in Google Drive(s) With New and Interactive UI
-<br><br>
-<b>/{BotCommands.SearchCommand}</b> [query]: Search in Google Drive(s) 
-<br><br>
-<b>/{BotCommands.TorrentSearchCommand}</b> [query]: Search for torrents with API
-<br>sites: <code>rarbg, 1337x, yts, etzv, tgx, torlock, piratebay, nyaasi, ettv</code><br><br>
-<b>/{BotCommands.StatusCommand}</b>: Shows a status of all the downloads
-<br><br>
-<b>/{BotCommands.StatsCommand}</b>: Show Stats of the machine the bot is hosted on
 '''
 
 help = telegraph.create_page(
@@ -176,7 +142,6 @@ help_string = f'''
 
 /{BotCommands.UnzipMirrorCommand} [download_url][magnet_link]: Start mirroring and if downloaded file is any archive, extracts it to Google Drive
 
-/{BotCommands.QbMirrorCommand} [magnet_link]: Start Mirroring using qBittorrent, Use /{BotCommands.QbMirrorCommand} s to select files before downloading
 
 /{BotCommands.CloneCommand} [drive_url]: Copy file/folder to Google Drive
 
@@ -193,8 +158,7 @@ help_string = f'''
 /{BotCommands.ListCommand} [query]: Search in Google Drive
 
 /{BotCommands.StatusCommand}: Shows a status of all the downloads
-
-/{BotCommands.UsageCommand}: Show Heroku Dyno Usage'''
+'''
 
 def bot_help(update, context):
     button = button_build.ButtonMaker()
@@ -207,9 +171,6 @@ botcmds = [
         (f'{BotCommands.MirrorCommand}', 'Mirror'),
         (f'{BotCommands.ZipMirrorCommand}','Mirror and upload as zip'),
         (f'{BotCommands.UnzipMirrorCommand}','Mirror and extract files'),
-        (f'{BotCommands.QbMirrorCommand}','Mirror torrent using qBittorrent'),
-        (f'{BotCommands.QbZipMirrorCommand}','Mirror torrent and upload as zip using qb'),
-        (f'{BotCommands.QbUnzipMirrorCommand}','Mirror torrent and extract files using qb'),
         (f'{BotCommands.WatchCommand}','Mirror yt-dlp supported link'),
         (f'{BotCommands.ZipWatchCommand}','Mirror yt-dlp supported link as zip'),
         (f'{BotCommands.CloneCommand}','Copy file/folder to Drive'),
@@ -219,15 +180,22 @@ botcmds = [
         (f'{BotCommands.StatusCommand}','Get mirror status message'),
         (f'{BotCommands.StatsCommand}','Bot usage stats'),
         (f'{BotCommands.PingCommand}','Ping the bot'),
-        (f'{BotCommands.UsageCommand}', 'Check Heroku Dyno Usage'),
-        (f'{BotCommands.HelpCommand}','Get detailed help')
+        (f'{BotCommands.HelpCommand}','Get detailed help'),
+        (f'{BotCommands.LeechCommand}','Leech'),
+        (f'{BotCommands.ZipLeechCommand}','Leech and upload as zip'),
+        (f'{BotCommands.UnzipLeechCommand}','Leech and extract files'),
+        (f'{BotCommands.LeechWatchCommand}','Leech yt-dlp supported link'),
+        (f'{BotCommands.LeechZipWatchCommand}','Leech yt-dlp supported link as zip'),
+        (f'{BotCommands.LeechSetCommand}', 'Leech settings'),
+        (f'{BotCommands.SetThumbCommand}', 'Set thumbnail'),
+        (f'{BotCommands.CancelMirror}','Cancel a task'),
+        (f'{BotCommands.StatusCommand}','Get mirror status message'),
+        (f'{BotCommands.StatsCommand}','Bot usage stats'),
     ]
 
 def main():
     # bot.set_my_commands(botcmds)
     fs_utils.start_cleanup()
-    if IS_VPS:
-        asyncio.new_event_loop().run_until_complete(start_server_async(PORT))
     # Check if the bot is restarting
     if os.path.isfile(".restartmsg"):
         with open(".restartmsg") as f:

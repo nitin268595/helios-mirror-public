@@ -1,5 +1,4 @@
 import os
-
 def getCommand(name: str, command: str):
     try:
         if len(os.environ[name]) == 0:
@@ -34,21 +33,13 @@ class _BotCommands:
         self.CountCommand = getCommand('COUNT_COMMAND', 'count')
         self.WatchCommand = getCommand('WATCH_COMMAND', 'watch')
         self.ZipWatchCommand = getCommand('ZIPWATCH_COMMAND', 'zipwatch')
-        self.QbMirrorCommand = getCommand('QBMIRROR_COMMAND', 'qbmirror')
-        self.QbUnzipMirrorCommand = getCommand('QBUNZIP_COMMAND', 'qbunzipmirror')
-        self.QbZipMirrorCommand = getCommand('QBZIP_COMMAND', 'qbzipmirror')
         self.DeleteCommand = getCommand('DEL_COMMAND', 'del')
-        self.ShellCommand = getCommand('SHELL_COMMAND', 'shell')
         self.LeechSetCommand = getCommand('LEECHSET_COMMAND', 'leechset')
         self.SetThumbCommand = getCommand('SETTHUMB_COMMAND', 'setthumb')
         self.LeechCommand = getCommand('LEECH_COMMAND', 'leech')
         self.UnzipLeechCommand = getCommand('UNZIPLEECH_COMMAND', 'unzipleech')
         self.ZipLeechCommand = getCommand('ZIPLEECH_COMMAND', 'zipleech')
-        self.QbLeechCommand = getCommand('QBLEECH_COMMAND', 'qbleech')
-        self.QbUnzipLeechCommand = getCommand('QBUNZIPLEECH_COMMAND', 'qbunzipleech')
-        self.QbZipLeechCommand = getCommand('QBZIPLEECH_COMMAND', 'qbzipleech')
         self.LeechWatchCommand = getCommand('LEECHWATCH_COMMAND', 'leechwatch')
         self.LeechZipWatchCommand = getCommand('LEECHZIPWATCH_COMMAND', 'leechzipwatch')
         self.TorrentSearchCommand = getCommand('TOR_COMMAND', 'ts')
-        self.UsageCommand = getCommand('USAGE_COMMAND', 'usage')
 BotCommands = _BotCommands()
