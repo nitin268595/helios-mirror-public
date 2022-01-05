@@ -1,4 +1,4 @@
-FROM arshsisodiya/heliosmirror:private
+FROM arshsisodiya/heliospublic:latest
 
 WORKDIR /usr/src/app
 RUN chmod 777 /usr/src/app
